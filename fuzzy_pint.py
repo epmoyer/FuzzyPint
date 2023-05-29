@@ -47,11 +47,15 @@ def main():
     print(f'{indent}{v1=}')
     print(f'{indent}{v2=}')
     print(f'{indent}{v1+v2=}')
+    print(f'{indent}{(v1+v2).pretty()=}')
+    print(f'{indent}{(v1+v2).significant()=}')
 
     print('Subtract:')
     print(f'{indent}{v1=}')
     print(f'{indent}{v2=}')
     print(f'{indent}{v1-v2=}')
+    print(f'{indent}{(v1-v2).pretty()=}')
+    print(f'{indent}{(v1-v2).significant()=}')
 
     print('Multiply:')
     v1 = FuzzyPint(2.73, 'volt', 0.1, -0.2)
@@ -68,11 +72,15 @@ def main():
     print(f'{indent}{v1=}')
     print(f'{indent}{r1=}')
     print(f'{indent}{v1/r1=}')
+    print(f'{indent}{(v1/r1).pretty()=}')
+    print(f'{indent}{(v1/r1).significant()=}')
 
     print('Exponent:')
     v1 = FuzzyPint(12.73, 'volt', 0.1, -0.2)
     print(f'{indent}{v1=}')
     print(f'{indent}{v1**2=}')
+    print(f'{indent}{(v1**2).pretty()=}')
+    print(f'{indent}{(v1**2).significant()=}')
 
     print('Dimensionless Multiply:')
     v1 = FuzzyPint(2.73, 'volt', 0.1, -0.2)
@@ -80,6 +88,8 @@ def main():
     print(f'{indent}{v1=}')
     print(f'{indent}{i1=}')
     print(f'{indent}{v1*i1=}')
+    print(f'{indent}{(v1*i1).pretty()=}')
+    print(f'{indent}{(v1*i1).significant()=}')
 
     # print('Significance:')
     for v1 in (
@@ -201,7 +211,7 @@ class FuzzyPint:
         return a ** b
 
     def pretty(self):
-        return f'{self._quantity:~P} [+{self._err_p:g}, {self._err_n:g}]'
+        return f'{self._quantity:g~P} [+{self._err_p:g}, {self._err_n:g}]'
 
     def significant(self):
         q_magnitude = self._quantity.m
