@@ -20,7 +20,9 @@ UREG = pint.UnitRegistry()
 def main():
     """Fuzzy Pint demo."""
     fp = FuzzyPint(2.73, 'volts', 0.13, -0.13)
+    print('Object __repr__:')
     print(f'{fp!r}')
+    print('Object __str__:')
     print(f'{fp}')
 
 
