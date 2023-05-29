@@ -34,10 +34,10 @@ def main():
     print(f'{indent}{v1=}')
     print(f'{indent}{v2=}')
     print(f'{indent}{v1+v2=}')
-    # print(f'\n{v1=}\n{v2=}\n{v1+v2=}')
-    # print(f'\n{v1=}\n{v2=}\n{v1+v2=}')
 
-    print('\Multiplication:')
+    print('Multiplication:')
+    v1 = FuzzyPint(2.73, 'volt', 0.1, -0.2)
+    i1 = FuzzyPint(21.97, 'ampere', 0.3, -0.4)
     print(f'{indent}{v1=}')
     print(f'{indent}{i1=}')
     print(f'{indent}{v1*i1=}')
@@ -54,18 +54,17 @@ class FuzzyPint:
 
     def __add__(self, b):
         quantity = self._quantity + b._quantity
-        err_p = self._err_p + b._err_p
-        err_n = self._err_n + b._err_n
+        err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._add)
+        # err_p = self._err_p + b._err_p
+        # err_n = self._err_n + b._err_n
         return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
 
     def __mul__(self, b):
         quantity = self._quantity * b._quantity
-        err_p, err_n = FuzzyPint._get_error(b, _multiply)
-        # err_p = self._err_p + b._err_p
-        # err_n = self._err_n + b._err_n
+        err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._multiply)
         return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
     
-    @classmethod
+    @staticmethod
     def _get_error(a: 'FuzzyPint', b: 'FuzzyPint', function):
         a_m = a._quantity.m
         b_m = b._quantity.m
@@ -88,6 +87,14 @@ class FuzzyPint:
 
         return err_p, err_n
 
+    @staticmethod
+    def _multiply(a, b):
+        return a * b
+
+    @staticmethod
+    def _add(a, b):
+        return a + b
+
     def __repr__(self):
         return (
             f'<FuzzyPint({self._quantity.m}, {self._quantity.units}, {self._err_p}, {self._err_n})>'
@@ -95,10 +102,6 @@ class FuzzyPint:
 
     def __str__(self):
         return f'{self._quantity} [+{self._err_p}, {self._err_n}]'
-
-
-def _multiply(a, b):
-    return a * b
 
 
 if __name__ == "__main__":
