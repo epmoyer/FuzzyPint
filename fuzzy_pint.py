@@ -90,6 +90,7 @@ def main():
     ):
         print(f'{indent}{v1=}')
         print(f'{indent}{v1.significant()=}')
+        print()
 
 
 class FuzzyPint:
@@ -194,6 +195,7 @@ class FuzzyPint:
 
         err_exponent_max = max(err_p_exponent, err_n_exponent)
         _debug_print(f'{err_exponent_max=}')
+        print(f'🟠 {err_exponent_max=}')
 
         # Strip insignificant digits
         shift_exponent = q_exponent - err_exponent_max
@@ -202,6 +204,17 @@ class FuzzyPint:
         _debug_print(f'{q_significand=}')
         q_magnitude = self._scientific_to_float(q_significand, q_exponent, q_is_negative)
         _debug_print(f'{q_magnitude=}')
+
+        # Round any remaining insignificant "display digits"
+        # (because we are working in floating point, there mau be a very small epsilon in the
+        # floating point representation of q_magnitude, so we will strip it)
+        decimal_rounding_digits = abs(err_exponent_max) if err_exponent_max < 0 else 0
+        _debug_print(f'{decimal_rounding_digits=}')
+        print(f'🟠 {decimal_rounding_digits=}')
+        # integer_digits = len(str(int(q_magnitude)))
+        # rounding_digits = integer_digits + decimal_rounding_digits
+        # q_magnitude = round(q_magnitude, rounding_digits)
+        q_magnitude = round(q_magnitude, decimal_rounding_digits)
 
         quantity = q_magnitude * self._quantity.units
 
@@ -221,8 +234,22 @@ class FuzzyPint:
 
     def __repr__(self):
         return (
-            f'<FuzzyPint({self._quantity.m}, {self._quantity.units}, {self._err_p}, {self._err_n})>'
+            # f'<FuzzyPint({self._quantity.m:g}, {self._quantity.units}, {self._err_p:g}, {self._err_n::g})>'
+            f'<FuzzyPint('
+            f'{FuzzyPint._clean_float(self._quantity.m)}'
+            ', '
+            f'{self._quantity.units}'
+            ', '
+            f'{FuzzyPint._clean_float(self._err_p)}'
+            ', '
+            f'{FuzzyPint._clean_float(self._err_n)}'
+            ')>'
         )
+    
+    @staticmethod
+    def _clean_float(value):
+        text = f'{value:0.100f}'
+        return text
 
     def __str__(self):
         return f'{self._quantity} [+{self._err_p}, {self._err_n}]'
