@@ -14,7 +14,7 @@ import click
 
 APP_NAME = 'fuzzy_pint'
 APP_VERSION = '0.0.1'
-DEBUG_ENABLE = True
+DEBUG_ENABLE = False
 
 UREG = pint.UnitRegistry()
 
@@ -181,22 +181,20 @@ class FuzzyPint:
         _debug_print(f'{err_exponent_max=}')
 
         # Strip insignificant digits
-        q_significand = round(q_significand * 10**(-err_exponent_max), 0) * 10**(err_exponent_max)
+        shift_exponent = q_exponent - err_exponent_max
+        _debug_print(f'{shift_exponent=}')
+        q_significand = round(q_significand * 10**(shift_exponent), 0) * 10**(-shift_exponent)
         _debug_print(f'{q_significand=}')
         q_magnitude = self._scientific_to_float(q_significand, q_exponent, q_is_negative)
         _debug_print(f'{q_magnitude=}')
 
         quantity = q_magnitude * self._quantity.units
 
-        # magnitude_exp = floor(log10(abs(q_magnitude)))
-
         return f'{quantity:~P}'
     
     @staticmethod
     def _float_to_scientific(value: float):
         is_negative = value < 0
-        # log = log10(abs(value))
-        # exponent = floor(log)
         exponent = floor(log10(abs(value)))
         significand = value * 10**(-exponent)
         return significand, exponent, is_negative
