@@ -47,6 +47,13 @@ def main():
     print(f'{indent}{i1=}')
     print(f'{indent}{v1*i1=}')
 
+    print('Divide:')
+    v1 = FuzzyPint(12.73, 'volt', 0.1, -0.2)
+    r1 = FuzzyPint(1234, 'ohm', 50, -50)
+    print(f'{indent}{v1=}')
+    print(f'{indent}{r1=}')
+    print(f'{indent}{v1/r1=}')
+
 
 class FuzzyPint:
     def __init__(self, magnitude: float, units: str = None, err_p: float = 0.0, err_n: float = 0.0):
@@ -71,7 +78,19 @@ class FuzzyPint:
         quantity = self._quantity * b._quantity
         err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._multiply)
         return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
+
+    def __truediv__(self, b):
+        quantity, err_p, err_n = FuzzyPint._apply_function(self, b, FuzzyPint._divide)
+        # quantity = self._quantity * b._quantity
+        # err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._divide)
+        return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
     
+    @staticmethod
+    def _apply_function(a: 'FuzzyPint', b: 'FuzzyPint', function):
+        quantity = function(a._quantity, b._quantity)
+        err_p, err_n = FuzzyPint._get_error(a, b, function)
+        return quantity, err_p, err_n
+
     @staticmethod
     def _get_error(a: 'FuzzyPint', b: 'FuzzyPint', function):
         a_m = a._quantity.m
@@ -96,16 +115,20 @@ class FuzzyPint:
         return err_p, err_n
 
     @staticmethod
-    def _multiply(a, b):
-        return a * b
-
-    @staticmethod
     def _add(a, b):
         return a + b
 
     @staticmethod
     def _sub(a, b):
         return a - b
+
+    @staticmethod
+    def _multiply(a, b):
+        return a * b
+
+    @staticmethod
+    def _divide(a, b):
+        return a / b
 
     def __repr__(self):
         return (
