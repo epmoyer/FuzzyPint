@@ -76,7 +76,18 @@ def main():
     print(f'{indent}{v1*i1=}')
 
     print('Significance:')
-    for v1 in (FuzzyPint(1234.5678, 'volt', 0.1, -0.1),):
+    for v1 in (
+        FuzzyPint(1234.5678, 'volt', 20.0, -20.0),
+        FuzzyPint(1234.5678, 'volt', 20.0, -2.0),
+        FuzzyPint(1234.5678, 'volt', 20.0, -0.2),
+        FuzzyPint(1234.5678, 'volt', 2.0, -2.0),
+        FuzzyPint(1234.5678, 'volt', 0.1, -0.1),
+        FuzzyPint(1234.5678, 'volt', 0.12, -0.12),
+        FuzzyPint(1234.5678, 'volt', 0.01, -0.01),
+        FuzzyPint(1234.5678, 'volt', 0.009, -0.009),
+        FuzzyPint(1234.5678, 'volt', 0.0009, -0.0009),
+        FuzzyPint(1234.5678, 'volt', 0.00009, -0.00009),
+    ):
         print(f'{indent}{v1=}')
         print(f'{indent}{v1.significant()=}')
 
@@ -102,10 +113,10 @@ class FuzzyPint:
 
     def __truediv__(self, b):
         return FuzzyPint._apply_function(self, b, FuzzyPint._divide)
-    
+
     def __pow__(self, b):
         return FuzzyPint._apply_function(self, b, FuzzyPint._pow)
-    
+
     @staticmethod
     def _apply_function(a: 'FuzzyPint', b: 'FuzzyPint', function):
         # Convert dimensionless quantities to FuzzyPint objects if supplied
@@ -129,7 +140,7 @@ class FuzzyPint:
             (a_m + a._err_p, b_m + b._err_p),
             (a_m + a._err_n, b_m + b._err_p),
             (a_m + a._err_p, b_m + b._err_n),
-            (a_m + a._err_n, b_m + b._err_n)
+            (a_m + a._err_n, b_m + b._err_n),
         ):
             result = function(a_m_speculative, b_m_speculative)
             error = result - nominal_m
@@ -160,7 +171,7 @@ class FuzzyPint:
     @staticmethod
     def _pow(a, b):
         return a ** b
-    
+
     def pretty(self):
         return f'{self._quantity:~P} [+{self._err_p}, {self._err_n}]'
 
@@ -171,10 +182,14 @@ class FuzzyPint:
         q_significand, q_exponent, q_is_negative = self._float_to_scientific(q_magnitude)
         _debug_print(f'{q_significand=}, {q_exponent=}, {q_is_negative=}')
 
-        err_p_significand, err_p_exponent, err_p_is_negative = self._float_to_scientific(self._err_p)
+        err_p_significand, err_p_exponent, err_p_is_negative = self._float_to_scientific(
+            self._err_p
+        )
         _debug_print(f'{err_p_significand=}, {err_p_exponent=}, {err_p_is_negative=}')
 
-        err_n_significand, err_n_exponent, err_n_is_negative = self._float_to_scientific(self._err_n)
+        err_n_significand, err_n_exponent, err_n_is_negative = self._float_to_scientific(
+            self._err_n
+        )
         _debug_print(f'{err_n_significand=}, {err_n_exponent=}, {err_n_is_negative=}')
 
         err_exponent_max = max(err_p_exponent, err_n_exponent)
@@ -183,7 +198,7 @@ class FuzzyPint:
         # Strip insignificant digits
         shift_exponent = q_exponent - err_exponent_max
         _debug_print(f'{shift_exponent=}')
-        q_significand = round(q_significand * 10**(shift_exponent), 0) * 10**(-shift_exponent)
+        q_significand = round(q_significand * 10 ** (shift_exponent), 0) * 10 ** (-shift_exponent)
         _debug_print(f'{q_significand=}')
         q_magnitude = self._scientific_to_float(q_significand, q_exponent, q_is_negative)
         _debug_print(f'{q_magnitude=}')
@@ -191,19 +206,18 @@ class FuzzyPint:
         quantity = q_magnitude * self._quantity.units
 
         return f'{quantity:~P}'
-    
+
     @staticmethod
     def _float_to_scientific(value: float):
         is_negative = value < 0
         exponent = floor(log10(abs(value)))
-        significand = value * 10**(-exponent)
+        significand = value * 10 ** (-exponent)
         return significand, exponent, is_negative
 
     @staticmethod
     def _scientific_to_float(significand: float, exponent: int, is_negative: bool) -> float:
-        value = significand * 10**exponent
+        value = significand * 10 ** exponent
         return -value if is_negative else value
-        
 
     def __repr__(self):
         return (
@@ -212,16 +226,18 @@ class FuzzyPint:
 
     def __str__(self):
         return f'{self._quantity} [+{self._err_p}, {self._err_n}]'
-    
+
     # def _debug(self, text):
     #     if not DEBUG_ENABLE:
     #         return
     #     print(f'🟣  {text}')
 
+
 def _debug_print(text):
     if not DEBUG_ENABLE:
         return
     print(f'🟣  {text}')
+
 
 if __name__ == "__main__":
     main()
