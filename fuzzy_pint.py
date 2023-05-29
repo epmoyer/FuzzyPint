@@ -234,22 +234,8 @@ class FuzzyPint:
 
     def __repr__(self):
         return (
-            # f'<FuzzyPint({self._quantity.m:g}, {self._quantity.units}, {self._err_p:g}, {self._err_n::g})>'
-            f'<FuzzyPint('
-            f'{FuzzyPint._clean_float(self._quantity.m)}'
-            ', '
-            f'{self._quantity.units}'
-            ', '
-            f'{FuzzyPint._clean_float(self._err_p)}'
-            ', '
-            f'{FuzzyPint._clean_float(self._err_n)}'
-            ')>'
+            f'<FuzzyPint({self._quantity.m:g}, {self._quantity.units}, {self._err_p:g}, {self._err_n:g})>'
         )
-    
-    @staticmethod
-    def _clean_float(value):
-        text = f'{value:0.100f}'
-        return text
 
     def __str__(self):
         return f'{self._quantity} [+{self._err_p}, {self._err_n}]'
