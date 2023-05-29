@@ -55,6 +55,8 @@ def main():
     print(f'{indent}{v1=}')
     print(f'{indent}{i1=}')
     print(f'{indent}{v1*i1=}')
+    print(f'{indent}{(v1*i1).pretty()=}')
+    print(f'{indent}{(v1*i1).significant()=}')
 
     print('Divide:')
     v1 = FuzzyPint(12.73, 'volt', 0.1, -0.2)
@@ -75,10 +77,17 @@ def main():
     print(f'{indent}{i1=}')
     print(f'{indent}{v1*i1=}')
 
-    print('Significance:')
+    # print('Significance:')
     for v1 in (
-        FuzzyPint(1234.5678, 'volt', 20.0, -20.0),
-        FuzzyPint(1234.5678, 'volt', 20.0, -2.0),
+        'Significance Precedence with Asymmetric Error:',
+        FuzzyPint(1234.5678, 'volt', 0.1, -0.1),
+        FuzzyPint(1234.5678, 'volt', 0.1, -0.01),
+        FuzzyPint(1234.5678, 'volt', 0.1, -0.001),
+        FuzzyPint(1234.5678, 'volt', 0.01, -0.1),
+        FuzzyPint(1234.5678, 'volt', 0.001, -0.1),
+        'Significance:',
+        FuzzyPint(1234.5678, 'volt', 2000.0, -2000.0),
+        FuzzyPint(1234.5678, 'volt', 200.0, -200.0),
         FuzzyPint(1234.5678, 'volt', 20.0, -0.2),
         FuzzyPint(1234.5678, 'volt', 2.0, -2.0),
         FuzzyPint(1234.5678, 'volt', 0.1, -0.1),
@@ -88,6 +97,10 @@ def main():
         FuzzyPint(1234.5678, 'volt', 0.0009, -0.0009),
         FuzzyPint(1234.5678, 'volt', 0.00009, -0.00009),
     ):
+        if isinstance(v1, str):
+            # This is a heading
+            print(v1)
+            continue
         print(f'{indent}{v1=}')
         print(f'{indent}{v1.significant()=}')
         print()
@@ -174,7 +187,7 @@ class FuzzyPint:
         return a ** b
 
     def pretty(self):
-        return f'{self._quantity:~P} [+{self._err_p}, {self._err_n}]'
+        return f'{self._quantity:~P} [+{self._err_p:g}, {self._err_n:g}]'
 
     def significant(self):
         q_magnitude = self._quantity.m
