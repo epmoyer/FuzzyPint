@@ -177,8 +177,6 @@ class FuzzyPint:
         return f'{self._quantity:~P} [+{self._err_p}, {self._err_n}]'
 
     def significant(self):
-        # err_p_exp = floor(log10(abs(self._err_p)))
-        # err_n_exp = floor(log10(abs(self._err_n)))
         q_magnitude = self._quantity.m
         q_significand, q_exponent, q_is_negative = self._float_to_scientific(q_magnitude)
         _debug_print(f'{q_significand=}, {q_exponent=}, {q_is_negative=}')
@@ -195,7 +193,7 @@ class FuzzyPint:
 
         err_exponent_max = max(err_p_exponent, err_n_exponent)
         _debug_print(f'{err_exponent_max=}')
-        print(f'🟠 {err_exponent_max=}')
+        # print(f'🟠 {err_exponent_max=}')
 
         # Strip insignificant digits
         shift_exponent = q_exponent - err_exponent_max
@@ -210,10 +208,7 @@ class FuzzyPint:
         # floating point representation of q_magnitude, so we will strip it)
         decimal_rounding_digits = abs(err_exponent_max) if err_exponent_max < 0 else 0
         _debug_print(f'{decimal_rounding_digits=}')
-        print(f'🟠 {decimal_rounding_digits=}')
-        # integer_digits = len(str(int(q_magnitude)))
-        # rounding_digits = integer_digits + decimal_rounding_digits
-        # q_magnitude = round(q_magnitude, rounding_digits)
+        # print(f'🟠 {decimal_rounding_digits=}')
         q_magnitude = round(q_magnitude, decimal_rounding_digits)
 
         quantity = q_magnitude * self._quantity.units
