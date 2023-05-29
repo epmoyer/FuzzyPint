@@ -30,12 +30,12 @@ def main():
     print('Object __str__():')
     print(f'{indent}{v1}')
 
-    print('\Add:')
+    print('Add:')
     print(f'{indent}{v1=}')
     print(f'{indent}{v2=}')
     print(f'{indent}{v1+v2=}')
 
-    print('\Subtract:')
+    print('Subtract:')
     print(f'{indent}{v1=}')
     print(f'{indent}{v2=}')
     print(f'{indent}{v1-v2=}')
@@ -65,31 +65,22 @@ class FuzzyPint:
         self._err_n = err_n
 
     def __add__(self, b):
-        quantity = self._quantity + b._quantity
-        err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._add)
-        return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
+        return FuzzyPint._apply_function(self, b, FuzzyPint._add)
 
     def __sub__(self, b):
-        quantity = self._quantity + b._quantity
-        err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._sub)
-        return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
+        return FuzzyPint._apply_function(self, b, FuzzyPint._sub)
 
     def __mul__(self, b):
-        quantity = self._quantity * b._quantity
-        err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._multiply)
-        return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
+        return FuzzyPint._apply_function(self, b, FuzzyPint._multiply)
 
     def __truediv__(self, b):
-        quantity, err_p, err_n = FuzzyPint._apply_function(self, b, FuzzyPint._divide)
-        # quantity = self._quantity * b._quantity
-        # err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._divide)
-        return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
+        return FuzzyPint._apply_function(self, b, FuzzyPint._divide)
     
     @staticmethod
     def _apply_function(a: 'FuzzyPint', b: 'FuzzyPint', function):
         quantity = function(a._quantity, b._quantity)
         err_p, err_n = FuzzyPint._get_error(a, b, function)
-        return quantity, err_p, err_n
+        return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
 
     @staticmethod
     def _get_error(a: 'FuzzyPint', b: 'FuzzyPint', function):
