@@ -40,11 +40,11 @@ class FuzzyPint:
         self._err_p = err_p
         self._err_n = err_n
     
-    def __sum__(self, b):
-        quantity = self._quantity + b._quantity
-        err_p = self._err_p + b._err_p
-        err_n = self._err_n + b._err_n
-        return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
+    # def __sum__(self, b):
+    #     quantity = self._quantity + b._quantity
+    #     err_p = self._err_p + b._err_p
+    #     err_n = self._err_n + b._err_n
+    #     return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
 
     def __repr__(self):
         return f'<FuzzyPint({self._quantity.m}, {self._quantity.units}, {self._err_p}, {self._err_n})>'
