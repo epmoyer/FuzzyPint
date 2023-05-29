@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # Standard Library
+from math import log10, floor
 import json
 
 # Library
@@ -32,6 +33,9 @@ def main():
     print(f'{indent}v1: {v1}')
     print('FuzzyPint.pretty():')
     print(f'{indent}v1: {v1.pretty()}')
+    print('FuzzyPint.significant():')
+    print(f'{indent}v1: {v1.significant()}')
+    return
     print('Dimensionless:')
     print(f'{indent}d1: {d1!r}')
 
@@ -95,7 +99,7 @@ class FuzzyPint:
         return FuzzyPint._apply_function(self, b, FuzzyPint._divide)
     
     def __pow__(self, b):
-        return FuzzyPint._apply_function(self, b, FuzzyPint._exponent)
+        return FuzzyPint._apply_function(self, b, FuzzyPint._pow)
     
     @staticmethod
     def _apply_function(a: 'FuzzyPint', b: 'FuzzyPint', function):
@@ -149,11 +153,38 @@ class FuzzyPint:
         return a / b
 
     @staticmethod
-    def _exponent(a, b):
+    def _pow(a, b):
         return a ** b
     
     def pretty(self):
         return f'{self._quantity:~P} [+{self._err_p}, {self._err_n}]'
+
+    def significant(self):
+        # err_p_exp = floor(log10(abs(self._err_p)))
+        # err_n_exp = floor(log10(abs(self._err_n)))
+        q_magnitude = self._quantity.m
+        q_significand, q_exponent, q_is_negative = self._to_scientific(q_magnitude)
+        print(f'{q_significand=}, {q_exponent=}, {q_is_negative=}')
+
+        err_p_significand, err_p_exponent, err_p_is_negative = self._to_scientific(self._err_p)
+        print(f'{err_p_significand=}, {err_p_exponent=}, {err_p_is_negative=}')
+
+        err_n_significand, err_n_exponent, err_n_is_negative = self._to_scientific(self._err_n)
+        print(f'{err_n_significand=}, {err_n_exponent=}, {err_n_is_negative=}')
+
+        # magnitude_exp = floor(log10(abs(q_magnitude)))
+
+        return f'{self._quantity:~P} [+{self._err_p}, {self._err_n}]'
+    
+    @staticmethod
+    def _to_scientific(value: float):
+        is_negative = value < 0
+        # log = log10(abs(value))
+        # exponent = floor(log)
+        exponent = floor(log10(abs(value)))
+        significand = value * 10**(-exponent)
+        return significand, exponent, is_negative
+        
 
     def __repr__(self):
         return (
