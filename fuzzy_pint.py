@@ -91,6 +91,13 @@ def main():
     print(f'{indent}{(v1*i1).pretty()=}')
     print(f'{indent}{(v1*i1).significant()=}')
 
+    print('Prefix Scale Conversion of "1.23456" V to mV:')
+    v1 = FuzzyPint(1.23456, 'volt', 0.0001, -0.0001)
+    print(f'{indent}{v1=}')
+    print(f'{indent}{v1*1000=}')
+    print(f'{indent}{(v1*1000).to("millivolt")=}')
+    print(f'{indent}{(v1*1000).to("millivolt").pretty()=}')
+
     # print('Significance:')
     for v1 in (
         'Significance Precedence with Asymmetric Error:',
@@ -110,6 +117,10 @@ def main():
         FuzzyPint(1234.5678, 'volt', 0.009, -0.009),
         FuzzyPint(1234.5678, 'volt', 0.0009, -0.0009),
         FuzzyPint(1234.5678, 'volt', 0.00009, -0.00009),
+        'Significance, Zero Padding:',
+        FuzzyPint(1.0, 'volt', 0.1, -0.1),
+        FuzzyPint(1.0, 'volt', 0.01, -0.01),
+        FuzzyPint(1.0, 'volt', 0.001, -0.001),
     ):
         if isinstance(v1, str):
             # This is a heading
@@ -250,7 +261,7 @@ class FuzzyPint:
 
         quantity = q_magnitude * self._quantity.units
 
-        return f'{quantity:~P}'
+        return f'{quantity:0.{decimal_rounding_digits}f~P}'
 
     @staticmethod
     def _float_to_scientific(value: float):
