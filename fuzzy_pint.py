@@ -9,7 +9,7 @@ import click
 
 
 # Local
-from util_pint import pint_dict_to_pint, pint_to_pint_dict
+# from util_pint import pint_dict_to_pint, pint_to_pint_dict
 
 APP_NAME = 'fuzzy_pint'
 APP_VERSION = '0.0.1'
@@ -20,7 +20,9 @@ UREG = pint.UnitRegistry()
 def main():
     """Fuzzy Pint demo."""
     fp = FuzzyPint(2.73, 'volts', 0.13, -0.13)
-    print(fp)
+    print(f'{fp!r}')
+    print(f'{fp}')
+
 
 
 class FuzzyPint:
@@ -32,7 +34,10 @@ class FuzzyPint:
         self._err_n = err_n
     
     def __repr__(self):
-        print(f'FuzzyPint({self._quantity.m}, {self._quantity.units}, {self._err_p}, {self._err_n})')
+        return f'FuzzyPint({self._quantity.m}, {self._quantity.units}, {self._err_p}, {self._err_n})'
+    
+    def __str__(self):
+        return f'{self._quantity} [+{self._err_p}, {self._err_n}]'
 
 
 if __name__ == "__main__":
