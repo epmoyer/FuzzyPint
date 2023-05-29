@@ -30,12 +30,17 @@ def main():
     print('Object __str__():')
     print(f'{indent}{v1}')
 
-    print('\nSummation:')
+    print('\Add:')
     print(f'{indent}{v1=}')
     print(f'{indent}{v2=}')
     print(f'{indent}{v1+v2=}')
 
-    print('Multiplication:')
+    print('\Subtract:')
+    print(f'{indent}{v1=}')
+    print(f'{indent}{v2=}')
+    print(f'{indent}{v1-v2=}')
+
+    print('Multiply:')
     v1 = FuzzyPint(2.73, 'volt', 0.1, -0.2)
     i1 = FuzzyPint(21.97, 'ampere', 0.3, -0.4)
     print(f'{indent}{v1=}')
@@ -55,8 +60,11 @@ class FuzzyPint:
     def __add__(self, b):
         quantity = self._quantity + b._quantity
         err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._add)
-        # err_p = self._err_p + b._err_p
-        # err_n = self._err_n + b._err_n
+        return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
+
+    def __sub__(self, b):
+        quantity = self._quantity + b._quantity
+        err_p, err_n = FuzzyPint._get_error(self, b, FuzzyPint._sub)
         return FuzzyPint(quantity.m, quantity.units, err_p, err_n)
 
     def __mul__(self, b):
@@ -94,6 +102,10 @@ class FuzzyPint:
     @staticmethod
     def _add(a, b):
         return a + b
+
+    @staticmethod
+    def _sub(a, b):
+        return a - b
 
     def __repr__(self):
         return (
