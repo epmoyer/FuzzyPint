@@ -59,6 +59,11 @@ def main():
     print(f'{indent}{r1=}')
     print(f'{indent}{v1/r1=}')
 
+    print('Exponent:')
+    v1 = FuzzyPint(12.73, 'volt', 0.1, -0.2)
+    print(f'{indent}{v1=}')
+    print(f'{indent}{v1**2=}')
+
     print('Dimensionless Multiply:')
     v1 = FuzzyPint(2.73, 'volt', 0.1, -0.2)
     i1 = 2.0
@@ -88,6 +93,9 @@ class FuzzyPint:
 
     def __truediv__(self, b):
         return FuzzyPint._apply_function(self, b, FuzzyPint._divide)
+    
+    def __pow__(self, b):
+        return FuzzyPint._apply_function(self, b, FuzzyPint._exponent)
     
     @staticmethod
     def _apply_function(a: 'FuzzyPint', b: 'FuzzyPint', function):
@@ -139,6 +147,10 @@ class FuzzyPint:
     @staticmethod
     def _divide(a, b):
         return a / b
+
+    @staticmethod
+    def _exponent(a, b):
+        return a ** b
     
     def pretty(self):
         return f'{self._quantity:~P} [+{self._err_p}, {self._err_n}]'
