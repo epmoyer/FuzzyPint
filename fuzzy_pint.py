@@ -229,16 +229,11 @@ class FuzzyPint:
 
     def __repr__(self):
         return (
-            f'<FuzzyPint({self._quantity.m:g}, {self._quantity.units}, {self._err_p:g}, {self._err_n:g})>'
+            f'<FuzzyPint({self._quantity.m:g}, {self._quantity.units}, err_p={self._err_p:g}, err_n={self._err_n:g})>'
         )
 
     def __str__(self):
         return f'{self._quantity} [+{self._err_p}, {self._err_n}]'
-
-    # def _debug(self, text):
-    #     if not DEBUG_ENABLE:
-    #         return
-    #     print(f'🟣  {text}')
 
 
 def _debug_print(text):
