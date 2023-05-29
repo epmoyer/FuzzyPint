@@ -91,12 +91,13 @@ def main():
     print(f'{indent}{(v1*i1).pretty()=}')
     print(f'{indent}{(v1*i1).significant()=}')
 
-    print('Prefix Scale Conversion of "1.23456" V to mV:')
+    print('Prefix Scale Conversion: Example: 1.23456 from V -> mV:')
     v1 = FuzzyPint(1.23456, 'volt', 0.0001, -0.0001)
     print(f'{indent}{v1=}')
     print(f'{indent}{v1*1000=}')
-    print(f'{indent}{(v1*1000).to("millivolt")=}')
-    print(f'{indent}{(v1*1000).to("millivolt").pretty()=}')
+    print(f'{indent}{(v1).to("millivolt")=}')
+    print(f'{indent}{(v1).to("millivolt").pretty()=}')
+    print(f'{indent}{(v1).to("millivolt").significant()=}')
 
     # print('Significance:')
     for v1 in (
@@ -145,10 +146,22 @@ class FuzzyPint:
         return FuzzyPint(self._quantity.m, self._quantity.units, self._err_p, self._err_n)
 
     def to(self, units: str):
+        """Convert units.
+
+        Some conversions (such as 'volts' to 'millivolts') may change the scale of the property's
+        magnitude, in which case it is necessary for us to similarly scale the associated error.
+
+        This conversion auto-detects such scale changes and scales the errors accordingly.
+        """
         if isinstance(units, str):
             units = UREG(units)
         new_object = self.clone()
         new_object._quantity = self._quantity.to(units)
+        if new_object._quantity.m != self._quantity.m:
+            # The units change scaled the magnitude, so scale the errors similarly.
+            scale = new_object._quantity.m / self._quantity.m
+            new_object._err_p *= scale
+            new_object._err_n *= scale
         return new_object
 
     def __add__(self, b):
