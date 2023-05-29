@@ -26,6 +26,7 @@ def main():
     v1 = FuzzyPint(2.73, 'volt', 0.13, -0.13)
     v2 = FuzzyPint(9.77, 'volt', 0.13, -0.13)
     i1 = FuzzyPint(21.97, 'ampere', 0.21, -0.21)
+    w1 = FuzzyPint(1.23, 'ampere*volt', 0.01, -0.01)
     d1 = FuzzyPint(123.4)
 
     print('FuzzyPint.__repr__():')
@@ -38,6 +39,9 @@ def main():
     print(f'{indent}v1: {v1.significant()}')
     print('Dimensionless:')
     print(f'{indent}d1: {d1!r}')
+    print('Conversion:')
+    print(f'{indent}{w1=}')
+    print(f'{indent}{w1.to("watt")=}')
 
     print('Add:')
     print(f'{indent}{v1=}')
@@ -115,6 +119,16 @@ class FuzzyPint:
         self._quantity = magnitude * units
         self._err_p = err_p
         self._err_n = err_n
+
+    def clone(self):
+        return FuzzyPint(self._quantity.m, self._quantity.units, self._err_p, self._err_n)
+
+    def to(self, units: str):
+        if isinstance(units, str):
+            units = UREG(units)
+        new_object = self.clone()
+        new_object._quantity = self._quantity.to(units)
+        return new_object
 
     def __add__(self, b):
         return FuzzyPint._apply_function(self, b, FuzzyPint._add)
