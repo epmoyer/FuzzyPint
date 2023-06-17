@@ -230,10 +230,11 @@ $
 ```
 
 ## Why not use Pint's `Measurement` object?
-Pint has a native `Measurement` object which can represent measurement error in a manner similar to FuzzyPint, but it has two significant limitations:
+Pint has a native `Measurement` object which can represent measurement error in a manner similar to FuzzyPint, but it has three significant limitations:
 
 - It does not propagate errors properly for non-linear operations
     - This is a known issue. Pint's [Measurement](https://pint.readthedocs.io/en/stable/advanced/measurement.html) documentation says "Only linear combinations are currently supported."
+- It does not support asymmetric error margins (e.g. `10 V +1/-2`)
 - It does not natively support rendering a value's significant figures based on that value's error margin.
 
 ### An example of the non-linear issue with Pint's `Measurement` object
