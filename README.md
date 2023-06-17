@@ -1,6 +1,89 @@
+![](docs/img/fuzz_pint_logo.jpg)
 # FuzzyPint
 
-Fuzzy Pint is a "wrapper" around [Pint](https://pint.readthedocs.io) objects which adds +/- error margins for the purpose of propagating "significant digits" through calculations.
+FuzzyPint is a "wrapper" around [Pint](https://pint.readthedocs.io) objects that adds +/- error margins for the purpose of propagating "significant digits" through calculations.
+
+FuzzyPint values correctness and simplicity over performance. Every math operation on two FuzzyPint performs 5 calculations: A nominal calculation on the nominal magnitudes, and all 4 combinations of worst-case min/max error propagations.  FuzzyPint does not try to be "smart" about how errors propagate; instead it brute-forces all calculations to see what the resulting worst-case min/max error would be, then includes that (worst case) error margin with the result.
+
+## Example
+### Basic Calculations
+Let's say you measure a resistor in the lab as "1000.2345 Ohms", and you know that the error of your multimeter (for resistance measurements) is +/- 0.01 ohms. You would enter that value like this:
+
+```
+>>> from fuzzy_pint import FuzzyPint
+>>> r = FuzzyPint(1000.2345, "ohm", 0.01, -0.01)
+>>> r
+<FuzzyPint(1000.23, "ohm", err_p=0.01, err_n=-0.01)>
+>>>
+```
+
+Now let's say you measure the voltage across that resistor as 5.4321V, and you know that the error of your multimeter (for voltage measurements) is +/- 0.001 V. You would enter that value like this:
+
+```
+>>> v=FuzzyPint(5.4321, "volt", 0.001, -0.001)
+>>> v
+<FuzzyPint(5.4321, "volt", err_p=0.001, err_n=-0.001)>
+>>>
+```
+
+You could then calculate the power dissipation in the resistor (P = V²/R) like this:
+
+```
+>>> p = v**2 / r
+>>> p
+<FuzzyPint(0.0295008, "volt ** 2 / ohm", err_p=1.11577e-05, err_n=-1.11555e-05)>
+>>> 
+```
+
+Notice that FuzzyPint has calculated the resulting (propagated) error for you. The units are in "volt / ohms" so let's convert that to milliwatts...
+
+```
+>>> p
+<FuzzyPint(29.5008, "milliwatt", err_p=0.0111577, err_n=-0.0111555)>
+>>>
+```
+
+[Pint](https://pint.readthedocs.io) does the heavy lifting here (units conversion, including SI prefix scaling), and FuzzyPint scales the errors to match the new magnitude.
+
+Now we can render the final result showing only the "significant" digits like this...
+
+```
+>>> p.significant()
+'29.50 mW'
+>>>
+```
+### JSON Serialization
+If we wish to store this result in a JSON file for later use we can serialize the FuzzyPint object like this:
+
+```
+>>> d = p.to_serializable()
+>>> d
+{'value': 29.50079, 'units': 'milliwatt', 'err_p': 0.011157703020417409, 'err_n': -0.011155480409783675}
+>>>
+```
+
+The `.to_serializable()` method returns a (JSON Serializable) dict:
+
+```
+>>> import json
+>>> j = json.dumps(d, indent=4)
+>>> print(j)
+{
+    "value": 29.50079,
+    "units": "milliwatt",
+    "err_p": 0.011157703020417409,
+    "err_n": -0.011155480409783675
+}
+>>>
+```
+
+And we can recover a serialized FuzzyPint object like this:
+```
+>>> v_recovered = FuzzyPint.from_serializable(d)
+>>> v_recovered
+<FuzzyPint(29.5008, "milliwatt", err_p=0.0111577, err_n=-0.0111555)>
+>>>
+```
 
 ## Demo
 You can demo the functionality by executing the module:
