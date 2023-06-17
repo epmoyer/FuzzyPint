@@ -131,6 +131,12 @@ def main():
         print(f'{indent}{v1.significant()=}')
         print()
 
+    print('JSON serialization')
+    v1 = FuzzyPint(2.7300001, 'volt', 0.13, -0.13)
+    print('FuzzyPint.__repr__():')
+    print(f'{indent}v1: {v1!r}')
+    print(f'{indent}v1: {v1}')
+    print(f'{indent}v1.to_serializable(): {v1.to_serializable()}')
 
 class FuzzyPint:
     def __init__(self, magnitude: float, units: str = None, err_p: float = 0.0, err_n: float = 0.0):
@@ -163,6 +169,12 @@ class FuzzyPint:
             new_object._err_p *= scale
             new_object._err_n *= scale
         return new_object
+    
+    def to_serializable(self):
+        return {
+            'value': self._quantity.m,  # .m is magnitude
+            'units': f'{self._quantity.units:D}',
+        }
 
     def __add__(self, b):
         return FuzzyPint._apply_function(self, b, FuzzyPint._add)
