@@ -139,6 +139,9 @@ def main():
     print(f'{indent}{v1.significant()=}')
     print(f'{indent}{v1.to_serializable()=}')
     print(f'{indent}{json.dumps(v1.to_serializable())=}')
+    v1_serialized = v1.to_serializable()
+    print(f'{indent}{v1_serialized=}')
+    print(f'{indent}{FuzzyPint.from_serializable(v1_serialized)=}')
 
 class FuzzyPint:
     def __init__(self, magnitude: float, units: str = None, err_p: float = 0.0, err_n: float = 0.0):
@@ -177,9 +180,18 @@ class FuzzyPint:
         return {
             'value': q_magnitude,
             'units': f'{self._quantity.units:D}',
-            'err_p': f'{self._err_p}',
-            'err_n': f'{self._err_n}',
+            'err_p': self._err_p,
+            'err_n': self._err_n,
         }
+    
+    @classmethod
+    def from_serializable(cls, object: dict) -> 'FuzzyPint':
+        return FuzzyPint(
+            object['value'],
+            object['units'],
+            object['err_p'],
+            object['err_n'],
+        )
 
     def __add__(self, b):
         return FuzzyPint._apply_function(self, b, FuzzyPint._add)
@@ -255,41 +267,6 @@ class FuzzyPint:
         return f'{self._quantity:g~P} [+{self._err_p:g}, {self._err_n:g}]'
 
     def significant(self):
-        # q_magnitude = self._quantity.m
-        # q_significand, q_exponent, q_is_negative = self._float_to_scientific(q_magnitude)
-        # _debug_print(f'{q_significand=}, {q_exponent=}, {q_is_negative=}')
-
-        # err_p_significand, err_p_exponent, err_p_is_negative = self._float_to_scientific(
-        #     self._err_p
-        # )
-        # _debug_print(f'{err_p_significand=}, {err_p_exponent=}, {err_p_is_negative=}')
-
-        # err_n_significand, err_n_exponent, err_n_is_negative = self._float_to_scientific(
-        #     self._err_n
-        # )
-        # _debug_print(f'{err_n_significand=}, {err_n_exponent=}, {err_n_is_negative=}')
-
-        # err_exponent_max = max(err_p_exponent, err_n_exponent)
-        # _debug_print(f'{err_exponent_max=}')
-        # # print(f'🟠 {err_exponent_max=}')
-
-        # # Strip insignificant digits
-        # shift_exponent = q_exponent - err_exponent_max
-        # _debug_print(f'{shift_exponent=}')
-        # q_significand = round(q_significand * 10 ** (shift_exponent), 0) * 10 ** (-shift_exponent)
-        # _debug_print(f'{q_significand=}')
-        # q_magnitude = self._scientific_to_float(q_significand, q_exponent, q_is_negative)
-        # _debug_print(f'{q_magnitude=}')
-
-        # # Round any remaining insignificant "display digits"
-        # # (because we are working in floating point, there mau be a very small epsilon in the
-        # # floating point representation of q_magnitude, so we will strip it)
-        # decimal_rounding_digits = abs(err_exponent_max) if err_exponent_max < 0 else 0
-        # _debug_print(f'{decimal_rounding_digits=}')
-        # # print(f'🟠 {decimal_rounding_digits=}')
-        # q_magnitude = round(q_magnitude, decimal_rounding_digits)
-
-        # quantity = q_magnitude * self._quantity.units
 
         q_magnitude, decimal_rounding_digits = self.significant_magnitude()
         quantity = q_magnitude * self._quantity.units
