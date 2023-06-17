@@ -7,7 +7,6 @@ import json
 
 # Library
 import pint
-import click
 
 
 # Local
@@ -23,6 +22,7 @@ UREG = pint.UnitRegistry()
 def main():
     """Fuzzy Pint demo."""
     indent = ' ' * 4
+    print(f'{APP_NAME} {APP_VERSION}')
 
     v1 = FuzzyPint(2.73, 'volt', 0.13, -0.13)
     v2 = FuzzyPint(9.77, 'volt', 0.13, -0.13)

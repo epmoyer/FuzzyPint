@@ -3,7 +3,15 @@
 
 FuzzyPint is a "wrapper" around [Pint](https://pint.readthedocs.io) objects that adds +/- error margins for the purpose of propagating "significant digits" through calculations.
 
-FuzzyPint values correctness and simplicity over performance. Every math operation on two FuzzyPint performs 5 calculations: A nominal calculation on the nominal magnitudes, and all 4 combinations of worst-case min/max error propagations.  FuzzyPint does not try to be "smart" about how errors propagate; instead it brute-forces all calculations to see what the resulting worst-case min/max error would be, then includes that (worst case) error margin with the result.
+FuzzyPint values correctness and simplicity over performance. Every math operation on (a pair of) FuzzyPint objects performs 5 calculations: A nominal calculation on the nominal magnitudes, and all 4 possible combinations of worst-case min/max error propagations.  FuzzyPint does not try to be "smart" about how errors propagate; instead it brute-forces all calculations to see what the resulting worst-case min/max error would be, then includes that (worst case) error margin in the result.
+
+## Installation
+There is no pip release (yet). FuzzyPint is a single file with a single external dependency (the [`pint`](https://pint.readthedocs.io) package), so for now you can just download `fuzzy_pint.py` to use it in a project.
+
+To use FuzzyPint, import the FuzzyPint object like this:
+```python
+from fuzzy_pint import FuzzyPint
+```
 
 ## Example
 ### Basic Calculations
@@ -89,7 +97,8 @@ And we can recover a serialized FuzzyPint object like this:
 You can demo the functionality by executing the module:
 
 ```
-$ ./fuzzy_pint.py             
+$ ./fuzzy_pint.py
+fuzzy_pint 0.0.2
 FuzzyPint.__repr__():
     v1: <FuzzyPint(2.73, "volt", err_p=0.13, err_n=-0.13)>
 FuzzyPint.__str__():
@@ -211,3 +220,16 @@ JSON serialization
     FuzzyPint.from_serializable(v1_serialized)=<FuzzyPint(2.5512, "volt", err_p=0.13, err_n=-0.13)>
 $ 
 ```
+
+## Development Status
+As of version `0.0.2`:
+
+- Supported operations:
+    - Add
+    - Subtract
+    - Multiply
+    - Divide
+    - Power (i.e. Exponentiation)
+- There are no tests (yet); just a demonstration of functionality.
+- There are no (known) bugs.
+- I am plumbing this into a "real" data analysis project.  Once that project has successfully "kicked the tires" in a real-world application I will consider the API "stable" and I will add proper test cases.
