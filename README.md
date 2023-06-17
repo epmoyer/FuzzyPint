@@ -59,7 +59,7 @@ Notice that FuzzyPint has calculated the resulting (propagated) error margin. Th
 >>>
 ```
 
-[Pint](https://pint.readthedocs.io) does the heavy lifting here (units conversion, including SI prefix scaling of the nominal magnitude), and FuzzyPint scales the errors to match the new magnitude.
+[Pint](https://pint.readthedocs.io) does the heavy lifting here (units conversion, including SI prefix scaling of the nominal magnitude), and FuzzyPint scales the errors to match the new (scaled) magnitude.
 
 Now we can render the final result showing only the "significant" digits like this...
 
@@ -228,6 +228,43 @@ JSON serialization
     FuzzyPint.from_serializable(v1_serialized)=<FuzzyPint(2.5512, "volt", err_p=0.13, err_n=-0.13)>
 $ 
 ```
+
+## Why not use Pint's `Measurement` object?
+Pint has a native `Measurement` object which can represent measurement error in a manner similar to FuzzyPint, but it has two significant limitations:
+
+- It does not propagate errors properly for non-linear operations
+    - This is a known issue. Pint's [Measurement](https://pint.readthedocs.io/en/stable/advanced/measurement.html) documentation says "Only linear combinations are currently supported."
+- It does not natively support rendering a value's significant figures based on that value's error margin.
+
+### An example of the non-linear issue with Pint's `Measurement` object
+
+If we square a voltage of 10 V +/- 1 V using Pint's native `Measurement` object we get:
+
+```
+>>> from pint import UnitRegistry
+>>> ureg = UnitRegistry()
+>>> v = (10 * ureg.volt).plus_minus(1)
+>>> print(v)
+(10.0 +/- 1.0) volt
+>>> print(v**2)
+(100 +/- 20) volt ** 2
+>>>
+```
+
+Pint's native `Measurement` object incorrectly reports the resulting error as `+/- 20`, but the error should be `+21 / -19` (because the worst case positive error would occur at `(10+1) * (10+1) == 121 == 100 + 21` and the worst case negative error would occur at `(10-1) * (10-1) == 81 == 100 - 19`).
+
+For the same calculation FuzzyPint correctly reports the expected error of `+21 / -19`:
+
+```
+>>> from fuzzy_pint import FuzzyPint
+>>> v = FuzzyPint(10, "volt", 1, -1)
+>>> print(v)
+10 volt [+1, -1]
+>>> print(v**2)
+100 volt ** 2 [+21.0, -19.0]
+>>>
+```
+
 
 ## Development Status
 As of version `0.0.2`:
