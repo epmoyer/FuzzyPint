@@ -3,7 +3,15 @@
 
 FuzzyPint is a "wrapper" around [Pint](https://pint.readthedocs.io) objects that adds +/- error margins for the purpose of propagating "significant digits" through calculations.
 
+## TL;DR
+- Create a bunch of values with **units** and **error margin**.
+- Do a bunch of math on them.
+- Get a result with a (propagated) error margin.
+- Display the result, with units, with the number of **significant digits** reflected by that result's error margin.
+
+## Overview
 FuzzyPint values correctness and simplicity over performance. Every math operation on (a pair of) FuzzyPint objects performs 5 calculations: A nominal calculation on the nominal magnitudes, and all 4 possible combinations of worst-case min/max error propagations.  FuzzyPint does not try to be "smart" about how errors propagate; instead it brute-forces all calculations to see what the resulting worst-case min/max error would be, then includes that (worst case) error margin in the result.
+
 
 ## Installation
 There is no pip release (yet). FuzzyPint is a single file with a single external dependency (the [`pint`](https://pint.readthedocs.io) package), so for now you can just download `fuzzy_pint.py` to use it in a project.
@@ -25,7 +33,7 @@ Let's say you measure a resistor in the lab as "1000.2345 Ohms", and you know th
 >>>
 ```
 
-Now let's say you measure the voltage across that resistor as 5.4321V, and you know that the error of your multimeter (for voltage measurements) is +/- 0.001 V. You would enter that value like this:
+Now let's say you measure the voltage across that resistor as 5.4321 V, and you know that the error of your multimeter (for voltage measurements) is +/- 0.001 V. You would enter that value like this:
 
 ```
 >>> v=FuzzyPint(5.4321, "volt", 0.001, -0.001)
@@ -43,7 +51,7 @@ You could then calculate the power dissipation in the resistor (P = V²/R) like 
 >>> 
 ```
 
-Notice that FuzzyPint has calculated the resulting (propagated) error for you. The units are in "volt / ohms" so let's convert that to milliwatts...
+Notice that FuzzyPint has calculated the resulting (propagated) error margin. The units are in "volt / ohms" so let's convert that to milliwatts...
 
 ```
 >>> p
@@ -51,7 +59,7 @@ Notice that FuzzyPint has calculated the resulting (propagated) error for you. T
 >>>
 ```
 
-[Pint](https://pint.readthedocs.io) does the heavy lifting here (units conversion, including SI prefix scaling), and FuzzyPint scales the errors to match the new magnitude.
+[Pint](https://pint.readthedocs.io) does the heavy lifting here (units conversion, including SI prefix scaling of the nominal magnitude), and FuzzyPint scales the errors to match the new magnitude.
 
 Now we can render the final result showing only the "significant" digits like this...
 
