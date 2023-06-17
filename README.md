@@ -51,7 +51,7 @@ You could then calculate the power dissipation in the resistor (P = V²/R) like 
 >>> 
 ```
 
-Notice that FuzzyPint has calculated the resulting (propagated) error margin. The units are in "volt / ohms" so let's convert that to milliwatts...
+Notice that FuzzyPint has calculated the resulting (propagated) error margin. The units are in "volt² / ohms" so let's convert that to milliwatts...
 
 ```
 >>> p
