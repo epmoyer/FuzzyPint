@@ -279,3 +279,7 @@ As of version `0.0.2`:
 - There are no tests (yet); just a demonstration of functionality.
 - There are no (known) bugs.
 - I am plumbing this into a "real" data analysis project.  Once that project has successfully "kicked the tires" in a real-world application I will consider the API "stable" and I will add proper test cases.
+
+## Shout out
+
+[Pint](https://pint.readthedocs.io) is fantastic and I love it immensely! The ability to carry units through calculations significantly guards against human error when combining or scaling physical quantities.  If you are manipulating physical quantities in Python then you should give Pint a try.
