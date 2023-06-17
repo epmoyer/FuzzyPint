@@ -1,7 +1,7 @@
 ![](docs/img/fuzz_pint_logo.jpg)
 # FuzzyPint
 
-FuzzyPint is a "wrapper" around [Pint](https://pint.readthedocs.io) objects that adds +/- error margins for the purpose of propagating "significant digits" through calculations.
+FuzzyPint is a "wrapper" around [Pint](https://pint.readthedocs.io) objects that adds +/- error margins (which can be asymmetric) for the purpose of propagating "significant digits" through calculations.
 
 ## TL;DR
 - Create a bunch of values with **units** and **error margin**.
