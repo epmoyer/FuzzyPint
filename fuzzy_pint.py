@@ -14,7 +14,7 @@ import click
 # from util_pint import pint_dict_to_pint, pint_to_pint_dict
 
 APP_NAME = 'fuzzy_pint'
-APP_VERSION = '0.0.1'
+APP_VERSION = '0.0.2'
 DEBUG_ENABLE = False
 
 UREG = pint.UnitRegistry()
